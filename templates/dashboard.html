@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>Logged in as: <strong>{{ username }}</strong> ({{ role.title() }})</div>
+    <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+  </header>
+
+  <section class="app-brand">
+    <div class="app-logo" aria-label="Ganesha face logo">🐘</div>
+    <div>
+      <p class="app-brand-title">Live To Learn</p>
+      <p class="app-brand-caption">No Procrastination</p>
+    </div>
+  </section>
+
+  <div class="layout-grid">
+    <aside class="sidebar">
+      <ul class="nav-links">
+        <li class="nav-item {{ 'active' if active_menu == 'home' else '' }}" title="Home"><a href="{{ url_for('home_page') }}">🏠 Home</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'dashboard' else '' }}" title="Dashboard"><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'following' else '' }}" title="Following"><a href="{{ url_for('following_page') }}">⭐ Following</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'help' else '' }}" title="Help"><a href="{{ url_for('help_page') }}">❓ Help</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'practiced' else '' }}" title="Practiced Questions"><a href="{{ url_for('practiced_page') }}">🧠 Practiced Questions</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'queries' else '' }}" title="Queries"><a href="{{ url_for('queries_page') }}">💬 Queries</a></li>
+      </ul>
+    </aside>
+
+    <main class="container">
+      <h1>Learning App Dashboard</h1>
+      <section class="welcome-card">
+        <div>Welcome back, <strong>{{ username }}</strong>! Engage and learn more every day.</div>
+      </section>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-list">
+          {% for cat, message in messages %}
+            <li class="flash {{ cat }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% if role == 'lecturer' %}
+      <section>
+        <h2>Your Lessons</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>ID</th><th>Title</th><th>Content</th></tr></thead>
+            <tbody>
+            {% for lesson in lessons %}
+              <tr><td>{{ lesson.id }}</td><td>{{ lesson.title }}</td><td>{{ lesson.content }}</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Add Lesson</h2>
+        <form method="POST" action="{{ url_for('dashboard') }}">
+          <label for="title">Lesson title</label>
+          <input id="title" name="title" required />
+
+          <label for="content">Lesson content</label>
+          <textarea id="content" name="content" rows="4" required></textarea>
+
+          <button type="submit">Add Lesson</button>
+        </form>
+      </section>
+    {% elif role == 'student' %}
+      <section class="time-panel">
+        <h2>Learning Time</h2>
+        <div class="period-controls">
+          <a class="period-btn {{ 'active' if selected_period == 'day' else '' }}" href="{{ url_for('dashboard') }}?period=day">Day</a>
+          <a class="period-btn {{ 'active' if selected_period == 'week' else '' }}" href="{{ url_for('dashboard') }}?period=week">Week</a>
+          <a class="period-btn {{ 'active' if selected_period == 'month' else '' }}" href="{{ url_for('dashboard') }}?period=month">Month</a>
+        </div>
+        <div class="stats-summary">
+          <strong>{{ learning_time[selected_period] }} hrs</strong> learned in {{ selected_period }}
+        </div>
+      </section>
+
+      <section>
+        <h2>Available Lessons</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>ID</th><th>Title</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+            {% for lesson in lessons %}
+              <tr>
+                <td>{{ lesson.id }}</td>
+                <td>{{ lesson.title }}</td>
+                <td>{{ 'Completed' if lesson.id in progress else 'Pending' }}</td>
+                <td>
+                  {% if lesson.id not in progress %}
+                    <a class="btn-small" href="{{ url_for('complete_lesson', lesson_id=lesson.id) }}">Mark complete</a>
+                  {% else %}
+                    ✓
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    {% else %}
+      <p>Unknown role. Please logout and login again.</p>
+    {% endif %}
+  </main>
+  </div>
+</body>
+</html>

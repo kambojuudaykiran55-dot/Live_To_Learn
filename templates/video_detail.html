@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ video.title }}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>Logged in as: <strong>{{ session.username }}</strong></div>
+    <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+  </header>
+
+  <div class="layout-grid">
+    <aside class="sidebar">
+      <ul class="nav-links">
+        <li class="nav-item {{ 'active' if active_menu == 'home' else '' }}"><a href="{{ url_for('home_page') }}">🏠 Home</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'dashboard' else '' }}"><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'following' else '' }}"><a href="{{ url_for('following_page') }}">⭐ Following</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'help' else '' }}"><a href="{{ url_for('help_page') }}">❓ Help</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'practiced' else '' }}"><a href="{{ url_for('practiced_page') }}">🧠 Practiced Questions</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'queries' else '' }}"><a href="{{ url_for('queries_page') }}">💬 Queries</a></li>
+      </ul>
+    </aside>
+
+    <main class="container">
+      <h1>{{ video.title }}</h1>
+      <p><strong>Syllabus:</strong></p>
+      <pre>{{ video.syllabus }}</pre>
+      <p><strong>Duration:</strong> {{ video.duration_min }} min</p>
+      <p><strong>Price:</strong> ${{ '%.2f' % video.price }}</p>
+
+      {% if purchase and purchase.expires_at > now() %}
+        <p class="success">Already purchased. <a class="label-btn" href="{{ url_for('video_watch', video_id=video.id) }}">Watch now</a></p>
+      {% else %}
+        <a class="label-btn" href="{{ url_for('video_pay', video_id=video.id) }}">Proceed to Payment</a>
+      {% endif %}
+
+      {% if subscription %}
+        <p class="info">Active subscription ({{ subscription.type }}), valid until {{ subscription.ends_at.strftime('%Y-%m-%d') }}</p>
+      {% endif %}
+    </main>
+  </div>
+</body>
+</html>

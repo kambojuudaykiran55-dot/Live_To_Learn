@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pay for {{ video.title }}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>Logged in as: <strong>{{ session.username }}</strong></div>
+    <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+  </header>
+
+  <div class="layout-grid">
+    <aside class="sidebar">
+      <ul class="nav-links">
+        <li class="nav-item {{ 'active' if active_menu == 'home' else '' }}"><a href="{{ url_for('home_page') }}">🏠 Home</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'dashboard' else '' }}"><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'following' else '' }}"><a href="{{ url_for('following_page') }}">⭐ Following</a></li>
+      </ul>
+    </aside>
+
+    <main class="container">
+      <h1>Pay for {{ video.title }}</h1>
+      <p>Video duration: {{ video.duration_min }} min</p>
+      <p>Price: ${{ '%.2f' % video.price }}</p>
+      <p>Platform UPI (pay here if not subscribed): <strong>kambojuudaykiran55@okaxis</strong></p>
+      <p>Lecturer UPI: <strong>{{ video.lecturer_profile.payment_upi if video.lecturer_profile else 'N/A' }}</strong></p>
+
+      <div class="warning-box">
+        <p><strong>Attention:</strong> You get up to <strong>{{ max(30, video.duration_min * 2) }}</strong> minutes to finish the video once opened. If you do not finish in time, you need to pay again.</p>
+      </div>
+
+      <form method="POST">
+        <label>Select payment method</label>
+        <select name="payment_option" required>
+          <option value="one_time">One-time payment (${{ '%.2f' % video.price }})</option>
+          <option value="quarterly">Quarterly subscription (${{ '%.2f' % (video.price * 15) }})</option>
+          <option value="yearly">Yearly subscription (${{ '%.2f' % (video.price * 50) }})</option>
+        </select>
+        <button type="submit">Pay Now</button>
+      </form>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <section class="app-brand" style="margin: 22px auto 0; max-width: 1000px; padding: 0 28px;">
+    <div class="app-logo" aria-label="Ganesha face logo">🐘</div>
+    <div>
+      <p class="app-brand-title">Live To Learn</p>
+      <p class="app-brand-caption">No Procrastination</p>
+    </div>
+  </section>
+  <main class="container">
+    <h1>Login</h1>
+    <section class="welcome-card">
+      <div>Select your role and login to continue to the learning portal.</div>
+    </section>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flash-list">
+          {% for cat, message in messages %}
+            <li class="flash {{ cat }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <label for="username">Username</label>
+      <input id="username" name="username" required />
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
+
+      <label for="role">Login as</label>
+      <select id="role" name="role" required>
+        <option value="student">Student</option>
+        <option value="lecturer">Lecturer</option>
+      </select>
+
+      <button type="submit">Sign In</button>
+    </form>
+
+    <p>Try users: <strong>student1</strong>/<strong>studentpass</strong> (Student), <strong>lecturer1</strong>/<strong>lecturerpass</strong> (Lecturer).</p>
+  </main>
+</body>
+</html>

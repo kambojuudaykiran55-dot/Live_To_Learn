@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Watching {{ video.title }}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>Logged in as: <strong>{{ session.username }}</strong></div>
+    <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+  </header>
+  <div class="layout-grid">
+    <aside class="sidebar">
+      <ul class="nav-links">
+        <li class="nav-item {{ 'active' if active_menu == 'home' else '' }}"><a href="{{ url_for('home_page') }}">🏠 Home</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'dashboard' else '' }}"><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'following' else '' }}"><a href="{{ url_for('following_page') }}">⭐ Following</a></li>
+      </ul>
+    </aside>
+
+    <main class="container">
+      <h1>Watching: {{ video.title }}</h1>
+      <p><strong>Syllabus:</strong></p>
+      <pre>{{ video.syllabus }}</pre>
+      <p>Task: Finish watching within allotted time.</p>
+
+      <div class="watch-panel">
+        <div class="watch-player">
+          <p><strong>Video player area (simulated)</strong></p>
+          <p>Lorem ipsum video content for {{ video.title }}.</p>
+        </div>
+
+        <div class="watch-sidebar">
+          <h2>Timer</h2>
+          <p id="timer-box"></p>
+          <button id="complete-btn">Mark as completed</button>
+        </div>
+      </div>
+
+      <script>
+        let remaining = {{ remaining_seconds }};
+        const timerBox = document.getElementById('timer-box');
+        const completeBtn = document.getElementById('complete-btn');
+
+        function formatTime(sec) {
+          const m = Math.floor(sec / 60).toString().padStart(2, '0');
+          const s = Math.floor(sec % 60).toString().padStart(2, '0');
+          return m + ':' + s;
+        }
+
+        function tick() {
+          if (remaining <= 0) {
+            timerBox.textContent = 'Expired. Payment required again.';
+            completeBtn.disabled = true;
+            return;
+          }
+          timerBox.textContent = formatTime(remaining);
+          remaining -= 1;
+        }
+
+        setInterval(tick, 1000);
+        tick();
+
+        completeBtn.addEventListener('click', () => {
+          alert('Great job! Assignment will appear soon.');
+          location.href = '{{ url_for('dashboard') }}';
+        });
+      </script>
+
+    </main>
+  </div>
+</body>
+</html>

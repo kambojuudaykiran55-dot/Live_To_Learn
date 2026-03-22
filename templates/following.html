@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>Logged in as: <strong>{{ session.username }}</strong></div>
+    <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+  </header>
+
+  <div class="layout-grid">
+    <aside class="sidebar">
+      <ul class="nav-links">
+        <li class="nav-item {{ 'active' if active_menu == 'home' else '' }}"><a href="{{ url_for('home_page') }}">🏠 Home</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'dashboard' else '' }}"><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'following' else '' }}"><a href="{{ url_for('following_page') }}">⭐ Following</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'help' else '' }}"><a href="{{ url_for('help_page') }}">❓ Help</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'practiced' else '' }}"><a href="{{ url_for('practiced_page') }}">🧠 Practiced Questions</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'queries' else '' }}"><a href="{{ url_for('queries_page') }}">💬 Queries</a></li>
+      </ul>
+    </aside>
+
+    <main class="container">
+      <h1>{{ title }}</h1>
+      <p>Discover lecturers, save for later, and click the profile to see their syllabus.</p>
+      <div class="card-grid">
+        {% for lecturer in lecturers %}
+          <div class="card">
+            <h3>{{ lecturer.username }}</h3>
+            <p><strong>Experience:</strong> {{ profiles[lecturer.id].experience_years if lecturer.id in profiles else 'N/A' }} years</p>
+            <p>{{ profiles[lecturer.id].bio if lecturer.id in profiles else '' }}</p>
+            <a class="label-btn" href="{{ url_for('lecturer_profile', lecturer_id=lecturer.id) }}">Open profile</a>
+            <a class="label-btn" href="{{ url_for('save_lecturer', lecturer_id=lecturer.id) }}">{{ 'Saved' if lecturer.id in saved else 'Save' }}</a>
+          </div>
+        {% endfor %}
+      </div>
+    </main>
+  </div>
+</body>
+</html>

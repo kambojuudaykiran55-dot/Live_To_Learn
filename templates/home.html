@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>Logged in as: <strong>{{ session.username }}</strong></div>
+    <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+  </header>
+  <section class="app-brand">
+    <div class="app-logo" aria-label="Ganesha face logo">🐘</div>
+    <div>
+      <p class="app-brand-title">Live To Learn</p>
+      <p class="app-brand-caption">No Procrastination</p>
+    </div>
+  </section>
+  <div class="layout-grid">
+    <aside class="sidebar">
+      <ul class="nav-links">
+        <li class="nav-item {{ 'active' if active_menu == 'home' else '' }}"><a href="{{ url_for('home_page') }}">🏠 Home</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'dashboard' else '' }}"><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'following' else '' }}"><a href="{{ url_for('following_page') }}">⭐ Following</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'help' else '' }}"><a href="{{ url_for('help_page') }}">❓ Help</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'practiced' else '' }}"><a href="{{ url_for('practiced_page') }}">🧠 Practiced Questions</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'queries' else '' }}"><a href="{{ url_for('queries_page') }}">💬 Queries</a></li>
+      </ul>
+    </aside>
+    <main class="container">
+      <h1>{{ title }}</h1>
+      <section class="welcome-card">
+        <div>Notifications for you are listed below.</div>
+      </section>
+      <section>
+        <div class="notifications-header">
+          <h2>Notifications</h2>
+          <div>
+            <a class="label-btn" href="{{ url_for('dismiss_all_notifications') }}">Dismiss All</a>
+          </div>
+        </div>
+        <ul class="notif-list">
+          {% for note in notifications %}
+            <li class="notif-item {{ 'new' if note.is_new else '' }}">
+              <span>{{ note.text }}</span>
+              {% if note.is_new and note.id != 0 %}
+                <a class="label-btn small" href="{{ url_for('dismiss_notification', notification_id=note.id) }}">Dismiss</a>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

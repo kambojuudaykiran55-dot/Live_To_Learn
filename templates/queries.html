@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ title }}</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>Logged in as: <strong>{{ session.username }}</strong></div>
+    <a class="btn-logout" href="{{ url_for('logout') }}">Logout</a>
+  </header>
+  <div class="layout-grid">
+    <aside class="sidebar">
+      <ul class="nav-links">
+        <li class="nav-item {{ 'active' if active_menu == 'home' else '' }}"><a href="{{ url_for('home_page') }}">🏠 Home</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'dashboard' else '' }}"><a href="{{ url_for('dashboard') }}">📊 Dashboard</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'following' else '' }}"><a href="{{ url_for('following_page') }}">⭐ Following</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'help' else '' }}"><a href="{{ url_for('help_page') }}">❓ Help</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'practiced' else '' }}"><a href="{{ url_for('practiced_page') }}">🧠 Practiced Questions</a></li>
+        <li class="nav-item {{ 'active' if active_menu == 'queries' else '' }}"><a href="{{ url_for('queries_page') }}">💬 Queries</a></li>
+      </ul>
+    </aside>
+    <main class="container">
+      <h1>{{ title }}</h1>
+
+      <section class="card">
+        <h2>Ask a question</h2>
+        <form method="POST" action="{{ url_for('queries_page') }}">
+          <label>Question title</label>
+          <input type="text" name="title" required />
+          <label>Details</label>
+          <textarea name="details" rows="4" required></textarea>
+          <button type="submit">Submit question</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>All questions</h2>
+        {% if questions %}
+          {% for q in questions %}
+            <div class="question-card">
+              <div class="question-head">
+                <strong>#{{ q.id }} {{ q.title }}</strong> - asked by {{ q.user_id }} at {{ q.created_at.strftime('%Y-%m-%d %H:%M') }}
+              </div>
+              <p>{{ q.details }}</p>
+
+              <div class="answers">
+                <h4>Answers</h4>
+                {% set answers = question_answers.get(q.id, []) %}
+                {% if answers %}
+                  {% for ans in answers %}
+                    <div class="answer-card">
+                      <p>{{ ans.text }}</p>
+                      <small>by user {{ ans.user_id }} at {{ ans.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <p class="muted">No answers yet.</p>
+                {% endif %}
+              </div>
+
+              <form class="answer-form" method="POST" action="{{ url_for('query_answer', question_id=q.id) }}">
+                <textarea name="answer_text" rows="2" placeholder="Write your answer..." required></textarea>
+                <button type="submit">Submit answer</button>
+              </form>
+
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No questions yet. Be first to ask!</p>
+        {% endif %}
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>
